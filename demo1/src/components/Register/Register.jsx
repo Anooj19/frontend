@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { toast } from 'react-hot-toast';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
+
+    const router = useNavigate();
 
     const [userData, setUserData] = useState({name: '', email: '', password: ''})
 
@@ -10,15 +14,26 @@ const Register = () => {
         console.log(userData)
     }
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         if (userData.name && userData.email && userData.password) {
             if (userData.password.length >= 8) {
-                const response = { data: {success: true} }
+                // const response = { data: {success: true} }
+                // if (response.data.success) {
+                //     toast.success("registration successfull")
+                //     setUserData({name: '', email: '', password: ''})
+                // }
+                try {
+                    const response = await axios.post("http://localhost:8000/api/v1/anuj/register", { userData });
                 if (response.data.success) {
-                    toast.success("registration successfull")
-                    setUserData({name: '', email: '', password: ''})
+                    toast.success("Registration successful")
+                    setUserData({ name: '', email: '', password: '' })
+                    router("/login")
+                }
+                } catch (error) {
+                    toast.error(error?.message)
+                   console.log(error, "error") 
                 }
             } else {
                 toast.error("password should be 8 digits")
